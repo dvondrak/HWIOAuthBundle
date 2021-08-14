@@ -84,27 +84,14 @@ class AccountNotLinkedException extends UsernameNotFoundException implements OAu
         $this->resourceOwnerName = $resourceOwnerName;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function serialize()
+    public function __serialize(): array
     {
-        return serialize(array(
-            $this->resourceOwnerName,
-            parent::serialize(),
-        ));
+        return [$this->resourceOwnerName, parent::__serialize()];
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function unserialize($str)
+    public function __unserialize(array $data): void
     {
-        list(
-            $this->resourceOwnerName,
-            $parentData
-        ) = unserialize($str);
-
-        parent::unserialize($parentData);
+        [$this->resourceOwnerName, $parentData] = $data;
+        parent::__unserialize($parentData);
     }
 }

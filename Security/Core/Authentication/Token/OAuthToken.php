@@ -253,45 +253,39 @@ class OAuthToken extends AbstractToken
         $this->resourceOwnerName = $resourceOwnerName;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function serialize()
+    public function __serialize(): array
     {
-        return serialize(array(
+        return [
             $this->accessToken,
             $this->rawToken,
             $this->refreshToken,
             $this->expiresIn,
             $this->createdAt,
             $this->resourceOwnerName,
-            parent::serialize(),
-        ));
+            parent::__serialize(),
+        ];
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function unserialize($serialized)
+    public function __unserialize(array $data): void
     {
-        $data = unserialize($serialized);
         // add a few extra elements in the array to ensure that we have enough keys when un-serializing
         // older data which does not include all properties.
         $data = array_merge($data, array_fill(0, 4, null));
 
-        list(
+        [
             $this->accessToken,
             $this->rawToken,
             $this->refreshToken,
             $this->expiresIn,
             $this->createdAt,
             $this->resourceOwnerName,
-            $parent) = $data;
+            $parent,
+        ] = $data;
 
         if (!$this->tokenSecret && isset($this->rawToken['oauth_token_secret'])) {
             $this->tokenSecret = $this->rawToken['oauth_token_secret'];
         }
 
-        parent::unserialize($parent);
+        parent::__unserialize($parent);
     }
 }
